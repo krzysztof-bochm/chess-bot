@@ -29,15 +29,23 @@ impl Square {
     /// Square::from_uci("a0").unwrap_err();
     /// Square::from_uci("a9").unwrap_err();
     /// Square::from_uci("i1").unwrap_err();
+    ///
+    /// Square::from_uci("lol").unwrap_err();
+    /// Square::from_uci("i11").unwrap_err();
+    /// Square::from_uci("ii1").unwrap_err();
     /// ```
     pub fn from_uci(uci: &str) -> Result<Square, ()> {
         let mut chars = uci.chars();
+        let result = Self::from_uci_iter(&mut chars);
+        
+        if chars.next().is_none() { result } else { Err(()) }
+    }
+
+    pub fn from_uci_iter<I>(chars: &mut I) -> Result<Square, ()>
+        where I: Iterator<Item=char>
+    {
         let file = chars.next();
         let rank = chars.next();
-  
-        if chars.next().is_some() {
-            return Err(())
-        }
 
         if let (Some(file), Some(rank)) = (file, rank) {
             "abcdefgh".chars().enumerate()
